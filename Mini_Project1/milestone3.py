@@ -4,7 +4,7 @@
 # so for milestone 3 the big goal was basically to make this
 # thing actually feel GOOD to use, not just functional.
 #
-# like milestone 2 was solid — it worked, it validated input,
+# like milestone 2 was solid  it worked, it validated input,
 # it had a menu and a loop. but it felt kind of plain and robotic.
 # you'd run it and it would just... spit numbers at you. no vibe.
 #
@@ -14,8 +14,8 @@
 #   🎯 "Your transformation journey starts RIGHT NOW."
 # instead of just "welcome to the calculator" lol
 #
-# the menu has emojis on every option — the rocket 🚀, the
-# thinking face 🤔, the wave 👋 — so it feels more like an
+# the menu has emojis on every option  the rocket 🚀, the
+# thinking face 🤔, the wave 👋  so it feels more like an
 # app and less like a school assignment
 #
 # the results screen is where it really pops off. instead of
@@ -28,11 +28,11 @@
 #   🥗  Daily calorie target: 1800 cal/day
 #   💪🔥 YOU'VE GOT THIS. Every day counts!
 #
-# even the error messages are encouraging now — if you type
+# even the error messages are encouraging now  if you type
 # letters instead of a number it says "Oops! you got this!"
 # instead of just "invalid input." small thing but it matters
 #
-# the help screen also got some flavor — stuff like
+# the help screen also got some flavor  stuff like
 #   ⛰️  "That's the mountain you're going to climb!"
 #   🔥  "Respect the grind!"
 #   🥗  "Feed your future self, not your current one."
