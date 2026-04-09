@@ -1,9 +1,8 @@
-
 # ============================================================
-# MILESTONE 2: RELIGIOUS TEXT COMMON WORD ANALYZER
+# MILESTONE 3: GENERATE INSIGHTFUL CONCLUSIONS
 # Books: KJ_Bible.txt | Quran.txt | Hindu.txt
-# Goal:  Find top shared words across all 3 texts, then use
-#        the Anthropic AI API to generate insightful, positive
+# Goal:  Find top shared words across all 3 texts, then usesetx OPENAI_API_KEY "your_api_key_here"
+#        the OpenAI API to generate insightful, positive
 #        conclusions about what those shared words reveal about
 #        the oneness of human spiritual belief.
 # ============================================================
@@ -12,7 +11,7 @@
 import string
 import os
 from collections import Counter
-import anthropic  # pip install anthropic
+from openai import OpenAI  # pip install openai
  
 # ============================================================
 # CONFIGURATION
@@ -44,7 +43,7 @@ SPIRITUAL_KEEP = {
     "name", "hand", "eye", "face", "voice", "command", "commandment",
     "obey", "servant", "master", "creation", "creator", "knowledge",
     "wisdom", "body", "mind", "duty", "action", "virtue", "reward",
-    "punishment", "community", "unity", "prayer", "devotion", "self",
+    "punishment", "community", "unity", "devotion", "self",
 }
  
 # Standard English stop words to filter OUT (non-meaningful filler)
@@ -94,15 +93,9 @@ def clean_text(raw_text):
     Lowercase, strip punctuation, split into word tokens.
     Returns a list of clean individual words.
     """
-    # Lowercase everything so Love == love == LOVE
-    text = raw_text.lower()
- 
-    # Remove punctuation (periods, commas, colons, etc.)
-    text = text.translate(str.maketrans("", "", string.punctuation))
- 
-    # Split into individual word tokens
+    text  = raw_text.lower()
+    text  = text.translate(str.maketrans("", "", string.punctuation))
     words = text.split()
- 
     return words
  
  
@@ -117,10 +110,8 @@ def filter_words(word_list):
     """
     filtered = []
     for word in word_list:
-        # Keep if it's a spiritual keyword we care about
         if word in SPIRITUAL_KEEP:
             filtered.append(word)
-        # Otherwise remove if it's a stop word or too short
         elif word not in STOP_WORDS and len(word) > 2:
             filtered.append(word)
     return filtered
@@ -141,21 +132,18 @@ def count_words(word_list):
  
 def find_shared_words(counters_dict, top_n=TOP_N):
     """
-    Pull top N words from each book, then find the intersection —
+    Pull top N words from each book, find the intersection —
     words that appear in ALL THREE top lists.
     Returns a dict of shared words with their counts per book.
     """
-    # Get top N word sets for each book
     top_sets = {}
     for religion, counter in counters_dict.items():
         top_words = {word for word, _ in counter.most_common(top_n)}
         top_sets[religion] = top_words
  
-    # Find intersection — words in ALL three top lists
     religions = list(top_sets.keys())
-    shared = top_sets[religions[0]] & top_sets[religions[1]] & top_sets[religions[2]]
+    shared    = top_sets[religions[0]] & top_sets[religions[1]] & top_sets[religions[2]]
  
-    # Build result: for each shared word, record count per book
     result = {}
     for word in shared:
         result[word] = {religion: counters_dict[religion][word] for religion in religions}
@@ -185,7 +173,6 @@ def display_results(ranked_words):
     """Print a clean formatted table of results."""
     religions = list(ranked_words[0][1].keys()) if ranked_words else []
  
-    # Header
     print("\n" + "=" * 70)
     print("  TOP SHARED WORDS ACROSS ALL 3 RELIGIOUS TEXTS")
     print("=" * 70)
@@ -194,7 +181,7 @@ def display_results(ranked_words):
     print("-" * 70)
  
     for rank, (word, counts) in enumerate(ranked_words, 1):
-        total = sum(counts.values())
+        total      = sum(counts.values())
         counts_str = "  ".join(f"{counts[r]:<20}" for r in religions)
         print(f"{rank:<6} {word:<16} {counts_str}  {total}")
  
@@ -202,27 +189,27 @@ def display_results(ranked_words):
  
  
 # ============================================================
-# STEP 8: AI-POWERED INSIGHT (ANTHROPIC API)
+# STEP 8: AI-POWERED INSIGHT (OPENAI API)
 # ============================================================
  
 def get_ai_insight(ranked_words):
     """
-    Send the top shared words to Claude via the Anthropic API.
-    Claude will generate warm, insightful, positive conclusions
+    Send the top shared words to GPT via the OpenAI API.
+    GPT will generate warm, insightful, positive conclusions
     about what these shared words reveal about human spirituality.
     """
  
     # Build the word summary to send to the AI
     word_summary = ""
     for rank, (word, counts) in enumerate(ranked_words, 1):
-        total = sum(counts.values())
-        religions = list(counts.keys())
+        total      = sum(counts.values())
+        religions  = list(counts.keys())
         counts_str = ", ".join(f"{r}: {counts[r]}" for r in religions)
         word_summary += f"  {rank}. '{word}' — Total: {total} ({counts_str})\n"
  
     prompt = f"""You are analyzing the most common shared words found across three major world religious texts:
 - Christianity: The King James Bible
-- Islam: The Quran  
+- Islam: The Quran
 - Hinduism: The Vedas
  
 The following words appeared in the TOP {TOP_N} most frequent words in ALL THREE texts:
@@ -240,33 +227,26 @@ Be thoughtful, grounded in factual religious context, and inspiring in tone.
 """
  
     print("\n" + "=" * 70)
-    print("  AI-POWERED INSIGHT (Claude via Anthropic API)")
+    print("  AI-POWERED INSIGHT (GPT via OpenAI API)")
     print("=" * 70)
-    print("  Sending results to Claude for analysis...\n")
+    print("  Sending results to GPT for analysis...\n")
  
     try:
-        client = anthropic.Anthropic()  # Reads ANTHROPIC_API_KEY from environment
+        client   = OpenAI()  # Reads OPENAI_API_KEY from your environment
  
-        message = client.messages.create(
-            model="claude-opus-4-5",
-            max_tokens=1024,
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
+        response = client.responses.create(
+            model="gpt-4o",
+            input=prompt
         )
  
-        insight_text = message.content[0].text
+        insight_text = response.output_text
         print(insight_text)
         print("=" * 70)
         return insight_text
  
-    except anthropic.AuthenticationError:
-        print("  [ERROR] Invalid API key.")
-        print("          Set your key with: export ANTHROPIC_API_KEY='your-key-here'")
-    except anthropic.APIConnectionError:
-        print("  [ERROR] Could not connect to Anthropic API. Check your internet connection.")
     except Exception as e:
-        print(f"  [ERROR] Unexpected error: {e}")
+        print(f"  [ERROR] OpenAI API error: {e}")
+        print("          Make sure OPENAI_API_KEY is set in your environment.")
  
     return None
  
@@ -286,12 +266,12 @@ def main():
     # --- Load, clean, count each book ---
     for religion, filepath in FILES.items():
         print(f"\n  Loading: {religion} ({filepath})...")
-        raw        = load_text(filepath)
+        raw      = load_text(filepath)
         if not raw:
             continue
-        words      = clean_text(raw)
-        filtered   = filter_words(words)
-        counter    = count_words(filtered)
+        words    = clean_text(raw)
+        filtered = filter_words(words)
+        counter  = count_words(filtered)
         counters_dict[religion] = counter
         print(f"  → {len(raw):,} characters | {len(words):,} raw words | {len(filtered):,} after filtering")
  
