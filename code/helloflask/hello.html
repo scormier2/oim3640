@@ -1,0 +1,60 @@
+<h1 style="color"> Hello, {{ name }}! </h1>
+<p>Welcome to Flask web development!</p>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello Flask</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        h1 {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hello, {{ name }}!</h1>
+    <p>Welcome to Flask web development!</p>
+</body>
+</html>
+
+
+
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.get('/')
+def hello():
+    return 'Hello, World!'
+
+if __name__ == '__main__':
+    app.run(debug=True)
+cd helloflask
+pip install flask
+python app.py  
+
+@app.get('/hello/<name>')
+def hello(name):
+    return f'Hello, {name}!'
+Visit http://127.0.0.1:5000/hello/Zhi --> shows "Hello, Zhi!"
+
+@app.get('/square/<int:n>')
+def square(n):
+    return f'{n} squared is {n ** 2}'
+
+Visit http://
+
+<form method="POST" action="/search">
+    <label>Enter a place:</label>
+    <input type="text" name="place">
+    <button type="submit">Search</button>
+</form>
+@app.post('/search')
+
