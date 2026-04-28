@@ -1,0 +1,25 @@
+1. What are you building?
+Best résumé is an AI-powered web application built with Flask and the Claude API that takes a user's raw, conversational descriptions of their work and academic experiences and transforms them into polished, impact-driven résumé bullet points formatted to the standards of the MLT Fellow Program, CareerSpring, and Harvard Office of Career Services.
+
+2. Why?
+First-generation college students, career-changers, and underrepresented candidates consistently lose opportunities not because they lack strong experience — but because they don't know how to translate that experience into résumé language. Programs like MLT and CareerSpring exist specifically because this gap is real and costly. This app gives anyone access to the formatting intelligence that those programs teach in workshops, on demand, for free.
+
+3. MVP vs. Stretch Goals
+MVP (minimum working version):
+
+A Flask web app with an input form where users enter their experiences in plain English
+Claude API call that transforms each input into 1–3 résumé bullet points with strong action verbs and quantified outcomes
+A clean résumé preview rendered in the browser in one of the three trusted formats
+A working "Export as PDF" button using a Python PDF library
+
+Stretch goals (if time allows):
+
+Multiple format toggles (MLT / CareerSpring / Harvard) with live switching
+Section-by-section builder (Education, Work, Leadership, Skills) with guided prompts
+A "stat parser" that automatically detects raw numbers in your input and ensures they appear in the bullet
+Save/load session so users can return and edit
+A side-by-side before/after view showing the original text vs. the AI rewrite
+
+
+4. What don't I know yet?
+Honestly, a few things. The Canvas layout engine for precise résumé formatting in the browser is new territory, I need to learn how to drive it from Python/Flask, or whether I should instead render the résumé as HTML with print CSS and convert it to PDF server-side using a library like WeasyPrint or pdfkit. I also need to learn how to prompt Claude reliably enough that bullet outputs are consistently formatted, prompt engineering for structured outputs is something I'll need to experiment with and iterate on. Finally, I haven't used WeasyPrint before and I'll need to test it with custom fonts and layout constraints.
