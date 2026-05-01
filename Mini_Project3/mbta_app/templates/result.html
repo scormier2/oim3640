@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ result.stop_name }} – MBTA Finder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href='https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css' rel='stylesheet' />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0f14;
+      --surface: #13161e;
+      --surface2: #1a1e2a;
+      --border: #252836;
+      --accent: #DA291C;
+      --accent2: #003DA5;
+      --text: #e8eaf0;
+      --muted: #6b7280;
+      --green: #22c55e;
+      --mono: 'DM Mono', monospace;
+      --serif: 'DM Serif Display', serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(218,41,28,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(218,41,28,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 700px;
+      margin: 0 auto;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      margin-bottom: 2rem;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--text); }
+
+    .search-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .searched-place {
+      font-family: var(--serif);
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      color: var(--text);
+      margin-bottom: 0.3rem;
+      line-height: 1.1;
+    }
+
+    .geo-label {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+
+    /* Map */
+    #map {
+      width: 100%;
+      height: 300px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    /* Result card */
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .result-card-header {
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .stop-eyebrow {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .stop-name {
+      font-family: var(--serif);
+      font-size: 1.6rem;
+      color: var(--text);
+    }
+
+    .wheelchair-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+
+    .wheelchair-badge.yes {
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: var(--green);
+    }
+
+    .wheelchair-badge.no {
+      background: rgba(218,41,28,0.1);
+      border: 1px solid rgba(218,41,28,0.25);
+      color: #f87171;
+    }
+
+    .wheelchair-badge.unknown {
+      background: rgba(107,114,128,0.15);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    /* Routes */
+    .routes-section {
+      padding: 1.2rem 1.5rem;
+    }
+
+    .routes-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.8rem;
+    }
+
+    .routes-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .route-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 500;
+    }
+
+    .route-pill .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.7;
+    }
+
+    /* Coords grid */
+    .coords-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border-top: 1px solid var(--border);
+    }
+
+    .coord-cell {
+      background: var(--surface);
+      padding: 0.9rem 1.5rem;
+    }
+
+    .coord-key {
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .coord-val {
+      font-size: 0.8rem;
+      color: var(--accent2);
+    }
+
+    /* Search again */
+    .search-again {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.2rem 1.5rem;
+    }
+
+    .search-again-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .input-wrap {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .input-wrap:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(218,41,28,0.12);
+    }
+    input[type="text"] {
+      flex: 1;
+      background: var(--surface2);
+      border: none;
+      outline: none;
+      padding: 0.75rem 1rem;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.85rem;
+    }
+    input::placeholder { color: var(--muted); }
+    button[type="submit"] {
+      background: var(--accent);
+      border: none;
+      padding: 0.75rem 1.2rem;
+      color: white;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button[type="submit"]:hover { background: #b82014; }
+
+    /* Mapbox popup override */
+    .mapboxgl-popup-content {
+      background: var(--surface2) !important;
+      color: var(--text) !important;
+      font-family: var(--mono) !important;
+      font-size: 0.75rem !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 8px !important;
+      padding: 0.5rem 0.75rem !important;
+    }
+    .mapboxgl-popup-tip { display: none !important; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <a href="/" class="back-link">← New search</a>
+
+  <div class="search-label">You searched for</div>
+  <div class="searched-place">{{ place }}</div>
+  <div class="geo-label">{{ result.place_label }}</div>
+
+  {% if result.stop_lat and result.stop_lon %}
+  <div id="map"></div>
+  {% endif %}
+
+  <div class="result-card">
+    <div class="result-card-header">
+      <div>
+        <div class="stop-eyebrow">Nearest MBTA Stop</div>
+        <div class="stop-name">{{ result.stop_name }}</div>
+      </div>
+      {% if result.wheelchair == 'Yes' %}
+        <span class="wheelchair-badge yes">♿ Accessible</span>
+      {% elif result.wheelchair == 'No' %}
+        <span class="wheelchair-badge no">✕ Not accessible</span>
+      {% else %}
+        <span class="wheelchair-badge unknown">? Accessibility unknown</span>
+      {% endif %}
+    </div>
+
+    {% if result.routes %}
+    <div class="routes-section">
+      <div class="routes-label">Routes served</div>
+      <div class="routes-list">
+        {% for route in result.routes %}
+        <span class="route-pill" style="background:#{{ route.color }}22; color:#{{ route.color }}; border: 1px solid #{{ route.color }}44;">
+          <span class="dot"></span>
+          {{ route.name }} <span style="opacity:0.6;font-size:0.62rem;">({{ route.type }})</span>
+        </span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="coords-grid">
+      <div class="coord-cell">
+        <div class="coord-key">Your location</div>
+        <div class="coord-val">{{ "%.4f"|format(result.place_lat) }}, {{ "%.4f"|format(result.place_lon) }}</div>
+      </div>
+      <div class="coord-cell">
+        <div class="coord-key">Stop coordinates</div>
+        <div class="coord-val">
+          {% if result.stop_lat %}{{ "%.4f"|format(result.stop_lat) }}, {{ "%.4f"|format(result.stop_lon) }}{% else %}—{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-again">
+    <div class="search-again-label">Search again</div>
+    <form action="/find" method="POST">
+      <div class="input-wrap">
+        <input type="text" name="place" placeholder="Another location…" autocomplete="off" />
+        <button type="submit">Find →</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if result.stop_lat and result.stop_lon %}
+<script src='https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js'></script>
+<script>
+  const MAPBOX_TOKEN = "{{ mapbox_token }}";
+  const placeLat = {{ result.place_lat }};
+  const placeLon = {{ result.place_lon }};
+  const stopLat = {{ result.stop_lat }};
+  const stopLon = {{ result.stop_lon }};
+  const stopName = {{ result.stop_name | tojson }};
+
+  mapboxgl.accessToken = MAPBOX_TOKEN;
+
+  const midLat = (placeLat + stopLat) / 2;
+  const midLon = (placeLon + stopLon) / 2;
+
+  const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/dark-v11',
+    center: [midLon, midLat],
+    zoom: 14,
+  });
+
+  map.on('load', () => {
+    // Place marker (blue)
+    const placeEl = document.createElement('div');
+    placeEl.style.cssText = `
+      width:14px; height:14px;
+      background:#003DA5; border:2px solid white;
+      border-radius:50%; box-shadow:0 0 12px rgba(0,61,165,0.6);
+    `;
+    new mapboxgl.Marker({ element: placeEl })
+      .setLngLat([placeLon, placeLat])
+      .setPopup(new mapboxgl.Popup({ offset: 12 }).setText("Your location"))
+      .addTo(map);
+
+    // Stop marker (red T)
+    const stopEl = document.createElement('div');
+    stopEl.innerHTML = 'T';
+    stopEl.style.cssText = `
+      width:28px; height:28px;
+      background:#DA291C; border:2px solid white;
+      border-radius:50%; color:white;
+      font-family:'DM Serif Display',serif;
+      font-size:14px; display:flex;
+      align-items:center; justify-content:center;
+      box-shadow:0 0 16px rgba(218,41,28,0.7);
+      cursor:pointer;
+    `;
+    new mapboxgl.Marker({ element: stopEl })
+      .setLngLat([stopLon, stopLat])
+      .setPopup(new mapboxgl.Popup({ offset: 16 }).setText(stopName))
+      .addTo(map);
+
+    // Draw line between them
+    map.addSource('line', {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: [[placeLon, placeLat], [stopLon, stopLat]]
+        }
+      }
+    });
+    map.addLayer({
+      id: 'line',
+      type: 'line',
+      source: 'line',
+      paint: { 'line-color': '#DA291C', 'line-width': 2, 'line-dasharray': [4, 3], 'line-opacity': 0.7 }
+    });
+
+    // Fit bounds
+    const bounds = new mapboxgl.LngLatBounds()
+      .extend([placeLon, placeLat])
+      .extend([stopLon, stopLat]);
+    map.fitBounds(bounds, { padding: 60, maxZoom: 16 });
+  });
+</script>
+{% endif %}
+</body>
+</html>
