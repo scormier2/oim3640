@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Best Résumé — AI-Powered Resume Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-logo">Best <em>Résumé</em></div>
+    <div class="nav-links">
+      <a href="#how">How It Works</a>
+      <a href="#formats">Formats</a>
+      <a href="/builder" class="btn-nav">Build Mine →</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-label">AI × MLT × CareerSpring × Harvard OCS</div>
+    <h1 class="hero-title">
+      Your story,<br><em>perfectly said.</em>
+    </h1>
+    <p class="hero-sub">
+      Turn raw experience into recruiter-ready language.<br>
+      Built on the most trusted resume frameworks in the industry.
+    </p>
+    <div class="hero-cta">
+      <a href="/builder" class="btn-primary">Start Building Free</a>
+      <a href="#how" class="btn-ghost">See how it works</a>
+    </div>
+
+    <!-- live transform demo -->
+    <div class="demo-card">
+      <div class="demo-before">
+        <span class="demo-tag">You say</span>
+        <p id="demo-before-text">"I was a teaching assistant in a program for 30 admitted students and my assistance directly generated 27 of them passing"</p>
+      </div>
+      <div class="demo-arrow">→</div>
+      <div class="demo-after">
+        <span class="demo-tag">AI writes</span>
+        <p id="demo-after-text">Directly created a <strong>90% success rate</strong> as a Teaching Assistant in a 30-student selective cohort</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" id="how">
+    <div class="section-inner">
+      <h2 class="section-title">Three steps to your best résumé</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <h3>Tell your story</h3>
+          <p>Describe your experience in plain language — no formatting required. Paste raw stats, dialogue, even rough notes.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h3>AI refines it</h3>
+          <p>Claude transforms your words into powerful, ATS-optimized bullets using MLT, CareerSpring, and Harvard OCS standards.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h3>Score & tailor</h3>
+          <p>Get a live score, targeted feedback, and one-click tailoring to any job description.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMATS -->
+  <section class="section section-dark" id="formats">
+    <div class="section-inner">
+      <h2 class="section-title">Trusted by the best programs</h2>
+      <p class="section-sub">Our AI is trained on resume formats from three of the most competitive career development programs in the country.</p>
+      <div class="formats-grid">
+        <div class="format-card">
+          <div class="format-icon">MLT</div>
+          <h3>Management Leadership for Tomorrow</h3>
+          <p>High-impact bullets emphasizing leadership, scale, and measurable outcomes for corporate and nonprofit roles.</p>
+        </div>
+        <div class="format-card">
+          <div class="format-icon">CS</div>
+          <h3>CareerSpring</h3>
+          <p>First-generation and diverse student-focused formatting that surfaces transferable skills and initiative.</p>
+        </div>
+        <div class="format-card">
+          <div class="format-icon">H</div>
+          <h3>Harvard OCS</h3>
+          <p>The gold-standard one-page format: clean, scannable, action-verb driven, and rigorously quantified.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STAT TRANSFORMER TEASER -->
+  <section class="section" id="transformer">
+    <div class="section-inner center">
+      <h2 class="section-title">Numbers become narratives</h2>
+      <p class="section-sub">Paste your stats — our AI converts them into the language recruiters respond to.</p>
+      <div class="examples-row">
+        <div class="example-pill">
+          <span class="pill-raw">"did 286 cold calls"</span>
+          <span class="pill-arrow">→</span>
+          <span class="pill-result">286+ client engagements driving pipeline growth</span>
+        </div>
+        <div class="example-pill">
+          <span class="pill-raw">"managed social media and got more followers"</span>
+          <span class="pill-arrow">→</span>
+          <span class="pill-result">Grew social following 40% through targeted content strategy</span>
+        </div>
+        <div class="example-pill">
+          <span class="pill-raw">"helped onboard new employees"</span>
+          <span class="pill-arrow">→</span>
+          <span class="pill-result">Streamlined onboarding for 12+ new hires, reducing ramp time</span>
+        </div>
+      </div>
+      <a href="/builder" class="btn-primary" style="margin-top: 2.5rem; display:inline-block;">Try it on your experience →</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-logo">Best <em>Résumé</em></div>
+    <p>Built with Claude AI · Inspired by MLT, CareerSpring & Harvard OCS</p>
+    <p class="footer-small">Final Project · Python & Flask · 2025</p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Build Your Résumé — Best Résumé</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/builder.css') }}">
+</head>
+<body class="builder-page">
+
+  <nav class="nav">
+    <a href="/" class="nav-logo">Best <em>Résumé</em></a>
+    <div class="nav-links">
+      <span class="nav-step active" data-step="1">1 · Info</span>
+      <span class="nav-step" data-step="2">2 · Experience</span>
+      <span class="nav-step" data-step="3">3 · Generate</span>
+    </div>
+  </nav>
+
+  <main class="builder-main">
+    <!-- SIDEBAR: Quick Bullet Polish -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h3>⚡ Quick Polish</h3>
+        <p>Paste any raw experience and AI will transform it instantly.</p>
+      </div>
+      <textarea id="quick-raw" placeholder="e.g. &quot;I made 286 cold calls and got 40 meetings&quot;" rows="4"></textarea>
+      <button class="btn-primary full-width" id="quick-polish-btn">Transform →</button>
+      <div class="quick-result" id="quick-result" style="display:none">
+        <div class="result-label">AI Result</div>
+        <div id="quick-result-text"></div>
+        <button class="btn-copy" id="quick-copy">Copy</button>
+      </div>
+
+      <hr class="sidebar-divider"/>
+
+      <div class="sidebar-header">
+        <h3>📋 Score My Resume</h3>
+        <p>Paste an existing resume for instant feedback.</p>
+      </div>
+      <textarea id="score-input" placeholder="Paste your current resume here..." rows="6"></textarea>
+      <button class="btn-secondary full-width" id="score-btn">Score It →</button>
+      <div id="score-result" style="display:none"></div>
+    </aside>
+
+    <!-- MAIN FORM -->
+    <div class="form-area">
+      <!-- STEP 1: Basic Info -->
+      <section class="form-step active" id="step-1">
+        <div class="step-header">
+          <div class="step-badge">Step 1 of 3</div>
+          <h2>Personal Information</h2>
+          <p>Let's start with the basics. This appears in your resume header.</p>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Full Name *</label>
+            <input type="text" id="full-name" placeholder="Jordan Williams" />
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="email" placeholder="jordan@email.com" />
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" id="phone" placeholder="(555) 000-0000" />
+          </div>
+          <div class="form-group">
+            <label>LinkedIn URL</label>
+            <input type="text" id="linkedin" placeholder="linkedin.com/in/jordanwilliams" />
+          </div>
+          <div class="form-group">
+            <label>City, State</label>
+            <input type="text" id="location" placeholder="Chicago, IL" />
+          </div>
+        </div>
+
+        <div class="step-header" style="margin-top:2rem">
+          <h2>Education</h2>
+        </div>
+
+        <div id="edu-container">
+          <div class="edu-entry card-entry">
+            <div class="form-grid">
+              <div class="form-group full">
+                <label>Institution *</label>
+                <input type="text" class="edu-school" placeholder="University of Illinois Chicago" />
+              </div>
+              <div class="form-group">
+                <label>Degree & Major *</label>
+                <input type="text" class="edu-degree" placeholder="B.S. Computer Science" />
+              </div>
+              <div class="form-group">
+                <label>GPA (if ≥ 3.0)</label>
+                <input type="text" class="edu-gpa" placeholder="3.7" />
+              </div>
+              <div class="form-group">
+                <label>Graduation Date *</label>
+                <input type="text" class="edu-grad" placeholder="May 2026" />
+              </div>
+              <div class="form-group full">
+                <label>Honors / Relevant Coursework</label>
+                <input type="text" class="edu-honors" placeholder="Dean's List, Data Structures, ML Fundamentals" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-add" id="add-edu">+ Add Another School</button>
+
+        <div class="step-nav">
+          <button class="btn-primary" onclick="goStep(2)">Next: Experience →</button>
+        </div>
+      </section>
+
+      <!-- STEP 2: Experience -->
+      <section class="form-step" id="step-2">
+        <div class="step-header">
+          <div class="step-badge">Step 2 of 3</div>
+          <h2>Work Experience & Activities</h2>
+          <p>Describe your experience in plain language — AI will handle the polish.</p>
+        </div>
+
+        <div id="exp-container">
+          <div class="exp-entry card-entry">
+            <div class="entry-type-tabs">
+              <button class="entry-tab active" data-type="work">Work / Internship</button>
+              <button class="entry-tab" data-type="leadership">Leadership / Activity</button>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Your Title / Role *</label>
+                <input type="text" class="exp-title" placeholder="Software Engineering Intern" />
+              </div>
+              <div class="form-group">
+                <label>Organization *</label>
+                <input type="text" class="exp-org" placeholder="Google" />
+              </div>
+              <div class="form-group">
+                <label>Location</label>
+                <input type="text" class="exp-loc" placeholder="Mountain View, CA" />
+              </div>
+              <div class="form-group">
+                <label>Dates *</label>
+                <input type="text" class="exp-dates" placeholder="Jun 2024 – Aug 2024" />
+              </div>
+              <div class="form-group full">
+                <label>What did you do? (raw — AI will transform) *</label>
+                <textarea class="exp-raw" rows="3" placeholder="Tell me in your own words: what you did, any numbers, who was impacted..."></textarea>
+              </div>
+              <div class="form-group full ai-zone">
+                <button class="btn-ai-polish">✦ Polish with AI</button>
+                <div class="polished-preview" style="display:none">
+                  <div class="polished-label">AI Bullets (click to use)</div>
+                  <div class="polished-text"></div>
+                  <input type="hidden" class="exp-polished" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-add" id="add-exp">+ Add Another Role</button>
+
+        <div class="step-header" style="margin-top:2rem">
+          <h2>Skills</h2>
+        </div>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Technical Skills</label>
+            <input type="text" id="tech-skills" placeholder="Python, SQL, JavaScript, Tableau, Excel" />
+          </div>
+          <div class="form-group">
+            <label>Languages</label>
+            <input type="text" id="languages" placeholder="English (Native), Spanish (Conversational)" />
+          </div>
+          <div class="form-group">
+            <label>Certifications / Awards</label>
+            <input type="text" id="certs" placeholder="MLT Fellow, Google Data Analytics Certificate" />
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-ghost" onclick="goStep(1)">← Back</button>
+          <button class="btn-primary" onclick="goStep(3)">Next: Generate →</button>
+        </div>
+      </section>
+
+      <!-- STEP 3: Generate -->
+      <section class="form-step" id="step-3">
+        <div class="step-header">
+          <div class="step-badge">Step 3 of 3</div>
+          <h2>Generate Your Résumé</h2>
+          <p>Review your info, then let AI assemble your complete, Harvard-formatted resume.</p>
+        </div>
+
+        <div class="generate-options">
+          <label class="option-label">Format Standard</label>
+          <div class="option-tabs">
+            <button class="option-tab active" data-format="harvard">Harvard OCS</button>
+            <button class="option-tab" data-format="mlt">MLT Fellow</button>
+            <button class="option-tab" data-format="careerspring">CareerSpring</button>
+          </div>
+        </div>
+
+        <div class="generate-options" style="margin-top:1.5rem">
+          <label class="option-label">Tailor to a Job? (Optional)</label>
+          <textarea id="job-description" rows="4" placeholder="Paste the job description here and AI will optimize your resume for this specific role..."></textarea>
+        </div>
+
+        <button class="btn-primary full-width generate-btn" id="generate-btn" style="margin-top:1.5rem; font-size:1.1rem; padding: 1rem 2rem">
+          ✦ Generate My Résumé
+        </button>
+
+        <div id="resume-output" style="display:none">
+          <div class="output-header">
+            <h3>Your Résumé</h3>
+            <div class="output-actions">
+              <button class="btn-ghost" id="copy-resume">Copy Text</button>
+              <button class="btn-ghost" id="tailor-btn">Tailor to Job →</button>
+            </div>
+          </div>
+          <pre id="resume-text" class="resume-output-text"></pre>
+
+          <div id="tailor-result" style="display:none" class="tailor-panel">
+            <h3>Job Tailoring Suggestions</h3>
+            <div id="tailor-content"></div>
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-ghost" onclick="goStep(2)">← Back</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/builder.js') }}"></script>
+</body>
+</html>
